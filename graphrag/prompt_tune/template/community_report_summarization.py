@@ -1,126 +1,85 @@
-# Copyright (c) 2024 Microsoft Corporation.
-# Licensed under the MIT License
+# 版权 (c) 2024 Microsoft Corporation.
+# 根据 MIT 许可证授权
 
-"""Fine-tuning prompts for community report summarization."""
+"""用于社区报告总结的微调提示。"""
 
 COMMUNITY_REPORT_SUMMARIZATION_PROMPT = """
 {persona}
 
-# Goal
-撰写一份社区扮演{role}角色的综合评估报告。本报告的内容包括对社区主要实体和关系的概述。
+# 目标
+以 {role} 的身份编写一份关于社区的全面评估报告。该报告的内容包括社区主要实体和关系的概述。
 
 # 报告结构
-报告应包括以下部分:
--标题:代表其主要实体的社区名称-标题应简短而具体。如果可能的话，在标题中包括代表性的命名实体。
--摘要:社区整体结构的执行摘要，其实体如何相互关联，以及与实体相关的要点。
--报告评级:{report_rating_description}
--评级解释:用一句话解释评级。
--详细发现:关于社区的5-10个关键见解的列表。每个见解都应该有一个简短的摘要，然后是根据以下基本规则建立的多段解释性文本。是全面的。
+报告应包含以下部分：
+- 标题：社区的名称，代表其关键实体 - 标题应简短但具体。在可能的情况下，标题中应包含具有代表性的命名实体。
+- 概要：社区整体结构的执行概要，实体之间的关系及其与实体相关的显著点。
+- 报告评级：{report_rating_description}
+- 评级解释：用一句话解释评级。
+- 详细发现：列出5-10个关于社区的关键见解。每个见解应包含简短的总结，并附有根据下文所列的依据规则撰写的多段解释。内容应全面。
 
-以格式良好的json格式字符串返回输出，格式如下。不要使用任何不必要的转义序列。输出应该是一个可以被json.loads解析的JSON对象。
+输出应为格式良好的JSON字符串，以下格式返回。不要使用任何不必要的转义序列。输出应为单个JSON对象，可以通过json.loads进行解析。
     {{
-        "title": "<报告标题>",
-        "summary": "<执行摘要>",
-        "rating": <报告评级>,
-        "rating_explanation": "<评级解释>"
-        "findings": "[{{"summary":"<见解1摘要>", "explanation": "<见解1解释>"}}, {{"summary":"<见解2摘要>", "explanation": "<见解1解释"}}]"
+        "title": "<report_title>",
+        "summary": "<executive_summary>",
+        "rating": <threat_severity_rating>,
+        "rating_explanation": "<rating_explanation>",
+        "findings": "[{{"summary":"<insight_1_summary>", "explanation": "<insight_1_explanation>"}}, {{"summary":"<insight_2_summary>", "explanation": "<insight_2_explanation>"}}]"
     }}
 
-# 理据规则
-由数据支持的点应按以下方式列出其数据引用：
-“这是一句由多个数据引用支持的示例句子[Data: <数据集名称>(记录 ID); <数据集名称>(记录 ID)]。”
-请勿在单个引用中列出超过 5 个记录 ID。相反，请列出前五个最相关的记录 ID，并添加“+more”以指示还有更多。
-例如：
-“人员 X 是公司 Y 的所有者，受到许多不当行为指控[Data: 报告(1)，实体(5、7); 关系(23); 声明(7、2、34、64、46，+more)]。”
-其中 1、5、7、23、2、34、46 和 64 分别代表相应数据记录的 ID(而不是索引)。
-请勿包括未提供支持证据的信息。
+# 依据规则
+每段之后，添加数据记录参考，如果段落内容来自一个或多个数据记录。引用格式为[records: <record_source> (<record_id_list>, ...<record_source> (<record_id_list>)]. 如果有超过5条数据记录，显示最相关的前5条记录。每段应包含多句解释和具体的例子，并引用具体的命名实体。所有段落必须在开头和结尾都有这些参考。若无相关角色或记录，使用 "NONE"。
 
-# 输入例子
+参考添加后的示例段落：
+这是输出文本的一个段落 [records: Entities (1, 2, 3), Claims (2, 5), Relationships (10, 12)]
+
+# 示例输入
 -----------
-文本：
- 
+文本:
+
 实体
- 
-编号、实体、描述
-5、翠绿绿洲广场、翠绿绿洲广场是统一游行的地点。
-6、和谐集会、和谐集会是在翠绿绿洲广场举办游行的组织。
- 
+
+id,entity,description
+5,ABILA CITY PARK,Abila 市公园是POK集会的地点
+
 关系
- 
-编号、源、目标、描述
-37、翠绿绿洲广场、统一游行、翠绿绿洲广场是统一游行的地点。
-38、翠绿绿洲广场、和谐集会、和谐集会在翠绿绿洲广场举办游行。
-39、翠绿绿洲广场、统一游行、统一游行在翠绿绿洲广场举行。
-40、翠绿绿洲广场、论述聚光灯、论述聚光灯在翠绿绿洲广场举行的统一游行报道。
-41、翠绿绿洲广场、贝利阿萨迪、贝利阿萨迪在翠绿绿洲广场发表了关于游行的讲话。
-43、和谐集会、统一游行、和谐集会组织统一游行。
- 
-输出：
+
+id,source,target,description
+37,ABILA CITY PARK,POK RALLY,Abila 市公园是POK集会的地点
+38,ABILA CITY PARK,POK,POK在Abila 市公园举办集会
+39,ABILA CITY PARK,POKRALLY,POKRally在Abila 市公园举行
+40,ABILA CITY PARK,CENTRAL BULLETIN,Central Bulletin报道了在Abila 市公园举行的POK集会
+
+输出:
 {{
-    "title": "翠绿绿洲广场和统一游行",
-    "summary": "该社区围绕翠绿绿洲广场展开，这是统一游行的地点。该广场与和谐集会、统一游行和论述聚光灯等实体都有关联，都与游行事件有关。",
+    "title": "Abila 市公园与POK集会",
+    "summary": "该社区围绕Abila 市公园展开，该公园是POK集会的地点。公园与POK、POKRally以及Central Bulletin有关系，这些都与集会活动相关。",
     "rating": 5.0,
-    "rating_explanation": "由于统一游行可能引起动荡或冲突，因此影响严重性评分为中等。",
+    "rating_explanation": "由于POK集会期间可能会发生动荡或冲突，因此影响评级为中等。",
     "findings": [
         {{
-            "summary": "翠绿绿洲广场作为中心位置",
-            "explanation": "翠绿绿洲广场是这个社区的中心实体，是统一游行的举办地。该广场是所有其他实体之间的共同纽带，表明它在社区中的重要性。广场与游行的关联可能会导致公共秩序紊乱或冲突等问题，具体取决于游行的性质和引发的反应。[Data: 实体(5)，关系(37、38、39、40、41，+more)]"
+            "summary": "Abila 市公园作为中心位置",
+            "explanation": "Abila 市公园是该社区的核心实体，作为POK集会的地点。该公园是所有其他实体的共同联系，表明其在社区中的重要性。该公园与集会的关联可能会导致如公共秩序紊乱等问题，具体取决于集会的性质及其引发的反应。 [records: Entities (5), Relationships (37, 38, 39, 40)]"
         }},
         {{
-            "summary": "和谐集会在社区中的作用",
-            "explanation": "和谐集会是这个社区中的另一个关键实体，是翠绿绿洲广场上游行的组织者。和谐集会及其游行的性质可能是潜在威胁的来源，具体取决于它们的目标和引发的反应。和谐集会与广场之间的关系对于理解这个社区的动态至关重要。[Data: 实体(6)，关系(38、43)]"
+            "summary": "POK 在社区中的角色",
+            "explanation": "POK是该社区的另一个关键实体，它是Abila 市公园集会的组织者。根据POK的性质及其集会的目的，它可能会成为潜在的威胁来源，具体取决于其目标及引发的反应。理解POK与公园的关系是了解该社区动态的关键。 [records: Relationships (38)]"
         }},
         {{
-            "summary": "统一游行作为重大事件",
-            "explanation": "统一游行是在翠绿绿洲广场举行的重大事件。这个事件是社区动态的一个关键因素，可能是潜在威胁的来源，具体取决于游行的性质和引发的反应。游行与广场之间的关系对于理解这个社区的动态至关重要。[Data: 关系(39)]"
+            "summary": "POKRALLY作为重要事件",
+            "explanation": "POKRALLY是Abila 市公园发生的一个重要事件。该事件是社区动态的关键因素，具体取决于集会的性质及其引发的反应，它可能会成为潜在的威胁来源。理解集会与公园的关系是了解该社区动态的关键。 [records: Relationships (39)]"
         }},
         {{
-            "summary": "论述聚光灯的角色",
-            "explanation": "论述聚光灯报道了在翠绿绿洲广场举行的统一游行。这表明该事件已经引起了媒体的关注，这可能会放大其对社区的影响。论述聚光灯的作用可能在塑造事件和涉及实体的公众观点方面非常重要。[Data: 关系(40)]"
+            "summary": "Central Bulletin的角色",
+            "explanation": "Central Bulletin正在报道Abila 市公园的POK集会，这表明该事件已引起媒体的关注，这可能会放大其对社区的影响。Central Bulletin的角色可能在塑造公众对该事件及其涉及实体的看法中发挥重要作用。 [records: Relationships (40)]"
         }}
     ]
+
 }}
 
 # 实际数据
- 
-使用以下文本作为你的答案，不要在你的答案里编造任何东西。
- 
-文本：
-{input_text}
- 
-报告应该包括以下几个部分：
- 
-- 标题：代表社区关键实体的社区名称 - 标题应该简短但具体。尽可能在标题中包含代表性的命名实体。
-- 摘要：关于社区整体结构、实体之间的关系以及与实体相关的重要信息的主管摘要。
-- 影响严重性评分：一个0-10之间的浮点数，表示社区中实体所造成的影响的严重程度。影响是社区的评分重要性。
-- 评分解释：对影响严重性评分给出一个简洁的解释。
-- 详细发现：关于社区的5-10个关键见解的列表。每个见解应包括一个简短的摘要，接着是多个段落的解释性文本，根据以下碾压法则进行说明。请全面。
- 
-以以下格式返回以正确的 JSON 格式化的字符串:
-    {{
-        "title": <report_title>,
-        "summary": <executive_summary>,
-        "rating": <impact_severity_rating>,
-        "rating_explanation": <rating_explanation>,
-        "findings": [
-            {{
-                "summary": <insight_1_summary>,
-                "explanation": <insight_1_explanation>
-            }},
-            {{
-                "summary": <insight_2_summary>,
-                "explanation": <insight_2_explanation>
-            }}
-        ]
-    }}
- 
-# 碾压规则
-由数据支持的观点应按以下方式列出其数据引用：
-"This is an example sentence supported by multiple data references [Data: <dataset name> (record ids); <dataset name> (record ids)]."
-一个引用中不要列出超过5个记录 ID，而是列出前5个最相关的记录 ID，并添加 "+more" 表示还有更多。
-例如：
-"Person X is the owner of Company Y and subject to many allegations of wrongdoing [Data: Reports (1), Entities (5, 7); Relationships (23); Claims (7, 2, 34, 64, 46, +more)]."
-其中 1、5、7、23、2、34、46 和 64 分别代表相关数据记录的 ID (而不是索引)。
-不要包括未提供支持证据的信息。
-输出：
-"""
+
+使用以下文本作为你的回答依据。不要在回答中杜撰任何内容。
+
+文本:
+{{input_text}}
+输出:"""
