@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from collections.abc import AsyncGenerator
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 from typing import Any
 
 import pandas as pd
@@ -51,9 +51,9 @@ log = logging.getLogger(__name__)
 class GlobalSearchResult(SearchResult):
     """A GlobalSearch result."""
 
-    map_responses: list[SearchResult]
-    reduce_context_data: str | list[pd.DataFrame] | dict[str, pd.DataFrame]
-    reduce_context_text: str | list[str] | dict[str, str]
+    map_responses: list[SearchResult] = field(default_factory=list)
+    reduce_context_data: str | list[pd.DataFrame] | dict[str, pd.DataFrame] = field(default_factory=dict)
+    reduce_context_text: str | list[str] | dict[str, str] = field(default_factory=str)
 
 
 class GlobalSearch(BaseSearch):
@@ -151,7 +151,7 @@ class GlobalSearch(BaseSearch):
         context_chunks, context_records = self.context_builder.build_context(
             conversation_history=conversation_history, **self.context_builder_params
         )
-
+        
         if self.callbacks:
             for callback in self.callbacks:
                 callback.on_map_response_start(context_chunks)  # type: ignore
@@ -175,6 +175,7 @@ class GlobalSearch(BaseSearch):
         )
 
         return GlobalSearchResult(
+            search_messages= reduce_response.search_messages,
             response=reduce_response.response,
             context_data=context_records,
             context_text=context_chunks,
@@ -236,6 +237,7 @@ class GlobalSearch(BaseSearch):
                 completion_time=time.time() - start_time,
                 llm_calls=1,
                 prompt_tokens=num_tokens(search_prompt, self.token_encoder),
+                search_messages = search_messages
             )
 
         except Exception:
@@ -364,7 +366,7 @@ class GlobalSearch(BaseSearch):
                 {"role": "system", "content": search_prompt},
                 {"role": "user", "content": query},
             ]
-
+            
             search_response = await self.llm.agenerate(
                 search_messages,
                 streaming=True,
@@ -378,6 +380,7 @@ class GlobalSearch(BaseSearch):
                 completion_time=time.time() - start_time,
                 llm_calls=1,
                 prompt_tokens=num_tokens(search_prompt, self.token_encoder),
+                search_messages = search_messages
             )
         except Exception:
             log.exception("Exception in reduce_response")

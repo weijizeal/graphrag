@@ -35,6 +35,7 @@ class ChunkStrategyType(str, Enum):
 
     tokens = "tokens"
     sentence = "sentence"
+    seperator = "seperator"
 
     def __repr__(self):
         """Get a string representation."""
@@ -157,6 +158,10 @@ def load_strategy(strategy: ChunkStrategyType) -> ChunkStrategy:
 
             bootstrap()
             return run_sentence
+        case ChunkStrategyType.seperator:
+            from .strategies.seperator import run as run_separator
+
+            return run_separator
         case _:
             msg = f"Unknown strategy: {strategy}"
             raise ValueError(msg)

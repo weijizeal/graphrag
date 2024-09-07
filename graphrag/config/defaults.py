@@ -48,6 +48,7 @@ CACHE_BASE_DIR = "cache"
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 100
 CHUNK_GROUP_BY_COLUMNS = ["id"]
+CHUNK_SEPARATOR = "\n\n"
 CLAIM_DESCRIPTION = (
     "Any claims or facts that could be relevant to information discovery."
 )

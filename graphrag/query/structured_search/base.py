@@ -5,7 +5,7 @@
 
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 from typing import Any
 
 import pandas as pd
@@ -32,6 +32,7 @@ class SearchResult:
     completion_time: float
     llm_calls: int
     prompt_tokens: int
+    search_messages: list[dict[str, Any]] = field(default_factory=list)
 
 
 class BaseSearch(ABC):

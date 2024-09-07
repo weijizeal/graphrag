@@ -386,12 +386,22 @@ def create_graphrag_config(
             if group_by_columns is None:
                 group_by_columns = defs.CHUNK_GROUP_BY_COLUMNS
 
+            separator = reader.str("separator") or None
             chunks_model = ChunkingConfig(
                 size=reader.int("size") or defs.CHUNK_SIZE,
                 overlap=reader.int("overlap") or defs.CHUNK_OVERLAP,
                 group_by_columns=group_by_columns,
                 encoding_model=reader.str(Fragment.encoding_model),
-            )
+            ) 
+            if separator is not None :
+                from graphrag.index.verbs.text.chunk import ChunkStrategyType
+                chunks_model.strategy = {
+                    "type": ChunkStrategyType.seperator, 
+                    "separator": separator
+                }
+                print("Chunking strategy set to separator: ")
+                print(chunks_model.strategy)
+            
         with (
             reader.envvar_prefix(Section.snapshot),
             reader.use(values.get("snapshots")),
