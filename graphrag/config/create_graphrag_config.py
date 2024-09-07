@@ -399,7 +399,6 @@ def create_graphrag_config(
                     "type": ChunkStrategyType.seperator, 
                     "separator": separator
                 }
-                print("Chunking strategy set to separator: ")
                 print(chunks_model.strategy)
             
         with (

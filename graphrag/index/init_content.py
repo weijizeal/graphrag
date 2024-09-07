@@ -62,6 +62,7 @@ chunks:
   size: {defs.CHUNK_SIZE}
   overlap: {defs.CHUNK_OVERLAP}
   group_by_columns: [{",".join(defs.CHUNK_GROUP_BY_COLUMNS)}] # by default, we don't allow chunks to cross documents
+  separator: "\n\n"
     
 input:
   type: {defs.INPUT_TYPE.value} # or blob
