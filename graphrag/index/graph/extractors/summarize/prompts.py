@@ -1,19 +1,19 @@
-# Copyright (c) 2024 Microsoft Corporation.
-# Licensed under the MIT License
+# 版权所有 (c) 2024 Microsoft Corporation.
+# 根据MIT许可证授权
 
-"""A file containing prompts definition."""
+"""包含提示定义的文件。"""
 
 SUMMARIZE_PROMPT = """
-You are a helpful assistant responsible for generating a comprehensive summary of the data provided below.
-Given one or two entities, and a list of descriptions, all related to the same entity or group of entities.
-Please concatenate all of these into a single, comprehensive description. Make sure to include information collected from all the descriptions.
-If the provided descriptions are contradictory, please resolve the contradictions and provide a single, coherent summary.
-Make sure it is written in third person, and include the entity names so we have the full context.
+你是一位负责生成全面摘要的助手。
+根据下面提供的数据，给定一个或两个实体及其相关的一系列描述。
+请将所有这些描述拼接成一段完整的、综合的描述。确保包含所有描述中的信息。
+如果描述中存在矛盾，请解决矛盾并提供一个一致的、连贯的总结。
+请确保以第三人称撰写，并包含实体名称，以确保上下文完整。
 
 #######
--Data-
-Entities: {entity_name}
-Description List: {description_list}
+-数据-
+实体: {entity_name}
+描述列表: {description_list}
 #######
-Output:
+输出:
 """
