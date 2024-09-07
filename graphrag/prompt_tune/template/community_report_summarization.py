@@ -27,54 +27,51 @@ COMMUNITY_REPORT_SUMMARIZATION_PROMPT = """
     }}
 
 # 依据规则
-每段之后，添加数据记录参考，如果段落内容来自一个或多个数据记录。引用格式为[records: <record_source> (<record_id_list>, ...<record_source> (<record_id_list>)]. 如果有超过5条数据记录，显示最相关的前5条记录。每段应包含多句解释和具体的例子，并引用具体的命名实体。所有段落必须在开头和结尾都有这些参考。若无相关角色或记录，使用 "NONE"。
+在每段文字后面，如果该段内容源自一个或多个数据记录，请添加数据记录引用。引用格式为 [记录: <记录来源> (<记录ID列表>, ...<记录来源> (<记录ID列表>)]. 如果记录超过10个，显示最相关的前10个。
+每段应包含多句解释性文字和具体的例子，使用特定命名实体。所有段落必须有这些参考。在没有相关角色或记录的情况下使用"NONE"。
 
-参考添加后的示例段落：
-这是输出文本的一个段落 [records: Entities (1, 2, 3), Claims (2, 5), Relationships (10, 12)]
+示例段落，带有参考：
+这是输出文本的一个段落 [记录: 实体 (1, 2, 3), 声明 (2, 5), 关系 (10, 12)]
 
 # 示例输入
------------
-文本:
+# ----------
+# 文本:
 
-实体
+# 实体
 
 id,entity,description
-5,ABILA CITY PARK,Abila 市公园是POK集会的地点
+1,天安门广场,天安门广场是北京市的一个著名地标
+2,人民英雄纪念碑,人民英雄纪念碑位于天安门广场的中心
 
-关系
+# 关系
 
 id,source,target,description
-37,ABILA CITY PARK,POK RALLY,Abila 市公园是POK集会的地点
-38,ABILA CITY PARK,POK,POK在Abila 市公园举办集会
-39,ABILA CITY PARK,POKRALLY,POKRally在Abila 市公园举行
-40,ABILA CITY PARK,CENTRAL BULLETIN,Central Bulletin报道了在Abila 市公园举行的POK集会
+10,天安门广场,人民英雄纪念碑,人民英雄纪念碑坐落在天安门广场中央
+11,天安门广场,国庆庆典,国庆庆典每年在天安门广场举行
+12,人民英雄纪念碑,游客,许多游客前往天安门广场参观人民英雄纪念碑
 
-输出:
+# 输出:
 {{
-    "title": "Abila 市公园与POK集会",
-    "summary": "该社区围绕Abila 市公园展开，该公园是POK集会的地点。公园与POK、POKRally以及Central Bulletin有关系，这些都与集会活动相关。",
-    "rating": 5.0,
-    "rating_explanation": "由于POK集会期间可能会发生动荡或冲突，因此影响评级为中等。",
+    "title": "天安门广场和人民英雄纪念碑",
+    "summary": "该社区围绕天安门广场展开，广场是北京市的重要地标。天安门广场与人民英雄纪念碑有直接关系，许多游客前往参观，此外，天安门广场也是国庆庆典的举办地。",
+    "rating": 4.5,
+    "rating_explanation": "该区域具有历史和文化的重要性，吸引了大量游客，特别是在国庆期间，影响力巨大。",
     "findings": [
         {{
-            "summary": "Abila 市公园作为中心位置",
-            "explanation": "Abila 市公园是该社区的核心实体，作为POK集会的地点。该公园是所有其他实体的共同联系，表明其在社区中的重要性。该公园与集会的关联可能会导致如公共秩序紊乱等问题，具体取决于集会的性质及其引发的反应。 [records: Entities (5), Relationships (37, 38, 39, 40)]"
+            "summary": "天安门广场作为历史文化地标",
+            "explanation": "天安门广场是北京市的中心地带，作为重要的历史文化地标，具有广泛的影响力。每年，广场吸引了大量国内外游客，特别是在重大节日如国庆庆典时。 [记录: 实体 (1), 关系 (11)]"
         }},
         {{
-            "summary": "POK 在社区中的角色",
-            "explanation": "POK是该社区的另一个关键实体，它是Abila 市公园集会的组织者。根据POK的性质及其集会的目的，它可能会成为潜在的威胁来源，具体取决于其目标及引发的反应。理解POK与公园的关系是了解该社区动态的关键。 [records: Relationships (38)]"
+            "summary": "人民英雄纪念碑的意义",
+            "explanation": "人民英雄纪念碑位于天安门广场的中心，是为了纪念为中国革命事业献身的人民英雄。它不仅是历史纪念碑，还具有重要的教育意义，吸引了成千上万的游客前来缅怀先烈。 [记录: 实体 (2), 关系 (10, 12)]"
         }},
         {{
-            "summary": "POKRALLY作为重要事件",
-            "explanation": "POKRALLY是Abila 市公园发生的一个重要事件。该事件是社区动态的关键因素，具体取决于集会的性质及其引发的反应，它可能会成为潜在的威胁来源。理解集会与公园的关系是了解该社区动态的关键。 [records: Relationships (39)]"
-        }},
-        {{
-            "summary": "Central Bulletin的角色",
-            "explanation": "Central Bulletin正在报道Abila 市公园的POK集会，这表明该事件已引起媒体的关注，这可能会放大其对社区的影响。Central Bulletin的角色可能在塑造公众对该事件及其涉及实体的看法中发挥重要作用。 [records: Relationships (40)]"
+            "summary": "天安门广场与游客的互动",
+            "explanation": "每年，成千上万的游客涌向天安门广场，参观人民英雄纪念碑，体验历史氛围。这种人与地标的互动增强了该地区的文化和社会价值，特别是在国庆节等重大活动期间。 [记录: 关系 (12)]"
         }}
     ]
-
 }}
+
 
 # 实际数据
 
