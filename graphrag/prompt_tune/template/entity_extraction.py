@@ -4,99 +4,95 @@
 """Fine-tuning prompts for entity extraction."""
 
 GRAPH_EXTRACTION_PROMPT = """
--Goal-
-Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+-目标-
+给定可能与此活动相关的文本文档和实体类型列表，从文本中识别这些类型的所有实体以及已识别实体之间的所有关系。
 
--Steps-
-1. Identify all entities. For each identified entity, extract the following information:
-- entity_name: Name of the entity, capitalized
-- entity_type: One of the following types: [{entity_types}]
-- entity_description: Comprehensive description of the entity's attributes and activities
-Format each entity as ("entity"{{tuple_delimiter}}<entity_name>{{tuple_delimiter}}<entity_type>{{tuple_delimiter}}<entity_description>)
+-步骤-
+1. 识别所有实体。对于每个已标识的实体，提取以下信息:
+- entity_name: 实体名
+- entity_type: 以下之一的实体类型： [{entity_types}]
+- entity_description: 对实体属性和活动的全面描述
+将每个实体格式化为("entity"{{tuple_delimiter}}<entity_name>{{tuple_delimiter}}<entity_type>{{tuple_delimiter}}<entity_description>)
 
-2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
-For each pair of related entities, extract the following information:
-- source_entity: name of the source entity, as identified in step 1
-- target_entity: name of the target entity, as identified in step 1
-- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
-- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
-Format each relationship as ("relationship"{{tuple_delimiter}}<source_entity>{{tuple_delimiter}}<target_entity>{{tuple_delimiter}}<relationship_description>{{tuple_delimiter}}<relationship_strength>)
+2. 从步骤1中标识的实体中，确定彼此“明显相关”的所有实体对(source_entity, target_entity) 。
+对于每一对相关实体，提取以下信息:
+- source_entity: 源实体的名称，如步骤1所示
+- target_entity: 目标实体的名称，如步骤1所示
+- relationship_description: 解释为什么你认为源实体和目标实体彼此相关
+- relationship_strength: 表示源实体与目标实体之间的关系强度
+将每个关系格式化为("relationship"{{tuple_delimiter}}<source_entity>{{tuple_delimiter}}<target_entity>{{tuple_delimiter}}<relationship_description>{{tuple_delimiter}}<relationship_strength>)
 
-3. Return output in {language} as a single list of all the entities and relationships identified in steps 1 and 2. Use **{{record_delimiter}}** as the list delimiter.
+3. 返回步骤1和步骤2中确定的所有实体和关系的单个列表。使用**{{record_delimiter}}**作为列表分隔符。
 
-4. If you have to translate into {language}, just translate the descriptions, nothing else!
+4. 完成后，输出{{completion_delimiter}}。
 
-5. When finished, output {{completion_delimiter}}.
-
--Examples-
+-例子-
 ######################
 {examples}
 
--Real Data-
+-真实的数据-
 ######################
-entity_types: [{entity_types}]
-text: {{input_text}}
+实体类型: [{entity_types}]
+文本: {{input_text}}
 ######################
-output:"""
+输出:"""
 
 GRAPH_EXTRACTION_JSON_PROMPT = """
--Goal-
-Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+-目标-
+给定可能与此活动相关的文本文档和实体类型列表，从文本中识别这些类型的所有实体以及已识别实体之间的所有关系。
 
--Steps-
-1. Identify all entities. For each identified entity, extract the following information:
-- entity_name: Name of the entity, capitalized
-- entity_type: One of the following types: [{entity_types}]
-- entity_description: Comprehensive description of the entity's attributes and activities
-Format each entity output as a JSON entry with the following format:
+-步骤-
+1. 识别所有实体。对于每个已识别的实体，提取以下信息:
+- entity_name: 实体名
+- entity_type: 以下之一的实体类型： [{entity_types}]
+- entity_description: 对实体属性和活动的全面描述
+使用以下格式将每个实体输出格式化为JSON条目:
 
 {{"name": <entity name>, "type": <type>, "description": <entity description>}}
 
-2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
-For each pair of related entities, extract the following information:
-- source_entity: name of the source entity, as identified in step 1
-- target_entity: name of the target entity, as identified in step 1
-- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
-- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
-Format each relationship as a JSON entry with the following format:
+2. 从步骤1中确定的实体中，确定彼此“明显相关”的所有实体对(source_entity, target_entity)。
+对于每一对相关实体，提取以下信息:
+- source_entity: 源实体的名称，如步骤1所示
+- target_entity: 目标实体的名称，如步骤1所示
+- relationship_description: 解释为什么你认为源实体和目标实体彼此相关
+- relationship_strength: 表示源实体与目标实体之间的关系强度
+使用以下格式将每个关系格式化为JSON条目:
 
 {{"source": <source_entity>, "target": <target_entity>, "relationship": <relationship_description>, "relationship_strength": <relationship_strength>}}
 
-3. Return output in {language} as a single list of all JSON entities and relationships identified in steps 1 and 2.
+3. 返回步骤1和步骤2中识别出的所有JSON实体和关系的单个列表。
 
-4. If you have to translate into {language}, just translate the descriptions, nothing else!
-
--Examples-
+-例子-
 ######################
 {examples}
 
--Real Data-
+-真实数据-
 ######################
 entity_types: {entity_types}
 text: {{input_text}}
 ######################
-output:"""
+输出:"""
 
 EXAMPLE_EXTRACTION_TEMPLATE = """
-Example {n}:
+案例 {n}:
 
-entity_types: [{entity_types}]
-text:
+实体类型: [{entity_types}]
+文本:
 {input_text}
 ------------------------
-output:
+输出:
 {output}
 #############################
 
 """
 
 UNTYPED_EXAMPLE_EXTRACTION_TEMPLATE = """
-Example {n}:
+案例 {n}:
 
-text:
+文本:
 {input_text}
 ------------------------
-output:
+输出:
 {output}
 #############################
 
@@ -104,38 +100,36 @@ output:
 
 
 UNTYPED_GRAPH_EXTRACTION_PROMPT = """
--Goal-
-Given a text document that is potentially relevant to this activity, first identify all entities needed from the text in order to capture the information and ideas in the text.
-Next, report all relationships among the identified entities.
+-目标-
+给定一个可能与此活动相关的文本文档，首先从文本中确定所需的所有实体，以便捕获文本中的信息和思想。
+接下来，报告标识实体之间的所有关系。
 
--Steps-
-1. Identify all entities. For each identified entity, extract the following information:
-- entity_name: Name of the entity, capitalized
-- entity_type: Suggest several labels or categories for the entity. The categories should not be specific, but should be as general as possible.
-- entity_description: Comprehensive description of the entity's attributes and activities
-Format each entity as ("entity"{{tuple_delimiter}}<entity_name>{{tuple_delimiter}}<entity_type>{{tuple_delimiter}}<entity_description>)
+-步骤-
+1. 识别所有实体。对于每个已识别的实体，提取以下信息:
+- entity_name: 实体名
+- entity_type: 建议实体的几个标签或类别。分类不应该是具体的，而应该尽可能的一般化。
+- entity_description: 对实体属性和活动的全面描述
+格式化每个实体为("entity"{{tuple_delimiter}}<entity_name>{{tuple_delimiter}}<entity_type>{{tuple_delimiter}}<entity_description>)
 
-2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
-For each pair of related entities, extract the following information:
-- source_entity: name of the source entity, as identified in step 1
-- target_entity: name of the target entity, as identified in step 1
-- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
-- relationship_strength: a numeric score indicating strength of the relationship between the source entity and target entity
-Format each relationship as ("relationship"{{tuple_delimiter}}<source_entity>{{tuple_delimiter}}<target_entity>{{tuple_delimiter}}<relationship_description>{{tuple_delimiter}}<relationship_strength>)
+2. 从步骤1中确定的实体中，确定彼此“明显相关”的所有对(source_entity, target_entity)。
+对于每一对相关实体，提取以下信息:
+- source_entity: 源实体的名称，如步骤1所示
+- target_entity: 目标实体的名称，如步骤1所示
+- relationship_description: 解释为什么你认为源实体和目标实体彼此相关
+- relationship_strength: 表示源实体与目标实体之间的关系强度
+格式化每个关系为("relationship"{{tuple_delimiter}}<source_entity>{{tuple_delimiter}}<target_entity>{{tuple_delimiter}}<relationship_description>{{tuple_delimiter}}<relationship_strength>)
 
-3. Return output in {language} as a single list of all the entities and relationships identified in steps 1 and 2. Use **{{record_delimiter}}** as the list delimiter.
+3. 将步骤1和步骤2中识别出的所有实体和关系返回为单个列表。使用**{{record_delimiter}}**作为列表分隔符。
 
-4. If you have to translate into {language}, just translate the descriptions, nothing else!
+4. 完成后，输出{{completion_delimiter}}。
 
-5. When finished, output {{completion_delimiter}}.
-
--Examples-
+-例子-
 ######################
 {examples}
 
--Real Data-
+-真实数据-
 ######################
-text: {{input_text}}
+文本: {{input_text}}
 ######################
-output:
+输出:
 """

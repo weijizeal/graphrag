@@ -5,128 +5,116 @@
 
 GENERATE_REPORT_RATING_PROMPT = """
 
-You are a helpful agent tasked with rating the importance of a given text in the context of the provided domain and persona. Your goal is to provide a rating that reflects the relevance and significance of the text to the specified domain and persona. Use your expertise to evaluate the text based on the importance criteria and assign a float score between 0-10. Only respond with the text description of the importance criteria. Use the provided example data format to guide your response. Ignore the content of the example data and focus on the structure.
+您是一名负责根据提供的领域和角色背景对给定文本的重要性进行评分的智能助手。您的目标是提供一个评分，反映文本在特定领域和角色背景下的相关性和重要性。使用您的专业知识，根据重要性标准评估文本，并分配一个介于0到10之间的浮动评分。只需提供关于重要性标准的文字描述。使用提供的示例数据格式来指导您的响应。忽略示例数据的内容，专注于其结构。
 
 ######################
--Examples-
+-示例-
 ######################
 
-### Example 1
+### 示例 1
 
-# Domain
+# 领域
 
-Personal and Family Communication
+个人和家庭沟通
 
-# Persona
+# 角色
 
-You are an expert in Social Network Analysis with a focus on the Personal and Family Communication domain. You are skilled at mapping and interpreting complex social networks, understanding the dynamics of interpersonal relationships, and identifying patterns of communication within communities. You are adept at helping people understand the structure and relations within their personal and family networks, providing insights into how information flows, how strong various connections are, and how these networks influence individual and group behavior.
+您是一名专注于个人和家庭沟通领域的社交网络分析专家。您擅长绘制和解读复杂的社交网络，理解人际关系的动态，并识别社区中的沟通模式。您善于帮助人们理解个人和家庭网络的结构及关系，提供关于信息如何流动、各种连接的强度以及这些网络如何影响个人和群体行为的见解。
 
-# Data
+# 数据
 
+主题：Re: 活动
+发件人：Alice Brown alice.brown@example.com
+日期：2012-11-14，上午9:52
+收件人：John Smith john.smith@example.com
+抄送：Jane Doe jane.doe@example.com，Bob Johnson bob.johnson@example.com，Emma Davis emma.davis@example.com
 
-Subject: Re: Event
-From: Alice Brown alice.brown@example.com
-Date: 2012-11-14, 9:52 a.m.
-To: John Smith john.smith@example.com
-CC: Jane Doe jane.doe@example.com, Bob Johnson bob.johnson@example.com, Emma Davis emma.davis@example.com
+活动定在下午6点于市政厅（Queen街）的活动大厅。我们只需要在5:45到达。活动持续30分钟，所以6:30结束。然后我们将去Spadina上的New Sky享受独特的美食！
 
-The event is at 6pm at City Hall (Queen street) event chamber. We
-just need to get there by 5:45pm. It is 30-minute long so we will be
-done by 6:30pm. We'll then head over to New Sky on Spadina for some
-unique cuisine!
+客人包括你和Emma，还有我的叔叔和姑姑，他们将代表我父母出席。Jane和Joe是见证人。
 
-Guests are you and Emma, and my uncle and auntie from London
-who my folks have designated to act as their reps. Jane and Joe are
-witnesses.
+务必参加！ Alice
 
-Be there or be square!
-Alice
+在2012年11月14日上午9:40，John Smith john.smith@example.com 写道：
 
-On Wed, Nov 14, 2012 at 9:40 AM, John Smith john.smith@example.com wrote:
+那是Bob的活动之后一天！
+有更多的活动安排细节吗？活动下周了！
 
-Thats the day after Bob's event!
-Any more details on the event schedule? ITS NEXT WEEK!
-On Tue, Nov 13, 2012 at 7:51 PM, Jane Doe
-jane.doe@example.com wrote:
-I am supposed to forward you the invitation to this year's celebration.
-Date: Saturday, Nov. 24, 6 pm starting
-Place as usual: Dean's house, 6 Cardish, Kleinburg L0J 1C0
+2012年11月13日19:51，Jane Doe jane.doe@example.com 写道：
+我应该转发给你今年庆典的邀请函。
+日期：星期六，11月24日，下午6点开始
+地点：和往年一样：Dean的家，6 Cardish，Kleinburg L0J 1C0
 Jane Doe
 jane.doe@example.com
 
-# Importance Criteria
-
-A float score between 0-10 that represents the relevance of the email's content to family communication, health concerns, travel plans, and interpersonal dynamics, with 1 being trivial or spam and 10 being highly relevant, urgent, and impactful to family cohesion or well-being.
+# 重要性标准
+根据文本内容在家庭沟通、健康问题、旅行计划和人际关系中的相关性，分配一个介于0到10之间的浮动评分，其中1代表琐碎或垃圾信息，10代表高度相关、紧急且对家庭凝聚力或幸福感有深远影响。
 #############################
 
-### Example 2
+### 示例 2
 
-# Domain
+# 领域
 
-Literary Analysis
+文学分析
 
-# Persona
+# 角色
 
-You are a literary scholar with a focus on works from the 19th century. You are skilled at analyzing and interpreting texts, identifying themes and motifs, and understanding the historical and cultural contexts in which these works were written. You are adept at helping people understand the deeper meanings and significance of literary works, providing insights into the author's intentions, the social issues addressed in the text, and the impact of these works on contemporary society.
+您是一名专注于19世纪作品的文学学者。您擅长分析和解读文本，识别主题和象征意义，并理解这些作品创作的历史和文化背景。您擅长帮助人们理解文学作品的深层意义和重要性，提供关于作者意图、文本中涉及的社会问题及这些作品对当代社会影响的洞见。
 
-# Data
+# 数据
 
-Had she found Jane in any apparent danger, Mrs. Bennet would have been very miserable; but being satisfied on seeing her that her illness was not alarming, she had no wish of her recovering immediately, as her restoration to health would probably remove her from Netherfield. She would not listen, therefore, to her daughter's proposal of being carried home; neither did the apothecary, who arrived about the same time, think it at all advisable. After sitting a little with Jane, on Miss Bingley's appearance and invitation, the mother and three daughters all attended her into the breakfast parlor. Bingley met them with hopes that Mrs. Bennet had not found Miss Bennet worse than she expected.
+如果她发现Jane有明显的危险，Bennet太太会非常痛苦；但当看到她的病情并不严重时，她并不急于让她立即康复，因为恢复健康很可能会让她离开Netherfield。因此，她不愿意听女儿提出要把她带回家的建议；同样，刚到的药剂师也不认为这么做是明智的。稍微陪伴Jane坐了一会儿后，在Miss Bingley出现并邀请他们之后，母亲和三个女儿都陪着她去了早餐厅。Bingley希望Bennet太太没有发现Jane的病情比预期的严重。
 
-"Indeed I have, Sir," was her answer. "She is a great deal too ill to be moved. Mr. Jones says we must not think of moving her. We must trespass a little longer on your kindness."
+“的确如此，先生，”她回答道，“她的病情太严重，无法挪动。Jones先生说我们不能考虑让她搬走。我们必须稍微再打扰您一段时间。”
 
-"Removed!" cried Bingley. "It must not be thought of. My sister, I am sure, will not hear of her removal."
+“搬走！”Bingley大喊，“这是不可能的。我确信我的姐姐不会同意搬走她的。”
 
-# Importance Criteria
+# 重要性标准
 
-A float score between 0-10 that represents the relevance of the text to literary analysis, historical context, thematic interpretation, and cultural significance, with 1 being trivial or irrelevant and 10 being highly significant, profound, and impactful to the understanding of the text and its implications.
+根据文本在文学分析、历史背景、主题解读和文化意义中的相关性，分配一个介于0到10之间的浮动评分，其中1代表琐碎或无关，10代表高度重要、深刻且对理解文本及其含义有深远影响。
 #############################
 
-### Example 3
+### 示例 3
 
-# Domain
+# 领域
+环境科学
 
-Environmental Science
+# 角色
+您是一名专注于气候变化和可持续发展的环境科学家。您擅长分析数据、解读社会评论并提出政策建议。您善于帮助人们理解气候变化的原因及后果，提供关于如何减少碳足迹、采用可持续发展实践并为更健康的地球作出贡献的洞见。
 
-# Persona
+# 数据
+主持人1（Anna）：欢迎收听“今日绿色生活”，这是一个探讨可持续生活的实用技巧和激励人心的故事的播客节目。我是主持人，Anna Green。
 
-You are an environmental scientist with a focus on climate change and sustainability. You are skilled at analyzing data, interpreting social commentary and recommending policy changes. You are adept at helping people understand the causes and consequences of climate change, providing insights into how they can reduce their carbon footprint, adopt sustainable practices, and contribute to a healthier planet.
+主持人2（Mark）：我是Mark Smith。今天，我们将重点讨论如何在日常生活中减少塑料浪费。我们会与一位特别嘉宾对话，她在无塑料生活方面取得了显著的进展。
 
-# Data
+Anna：没错，Mark。今天的嘉宾是Laura Thompson，她是“无塑料生活”的创始人，这是一家致力于分享减少塑料使用的技巧和资源的博客。欢迎参加节目，Laura！
 
-Host 1 (Anna): Welcome to "Green Living Today," the podcast where we explore practical tips and inspiring stories about sustainable living. I'm your host, Anna Green.
+嘉宾（Laura）：谢谢你，Anna和Mark。很高兴来到这里。
 
-Host 2 (Mark): And I'm Mark Smith. Today, we have a special episode focused on reducing plastic waste in our daily lives. We'll be talking to a special guest who has made significant strides in living a plastic-free lifestyle.
+Mark：Laura，让我们从你的旅程开始吧。是什么激发了你开始无塑料生活的？
 
-Anna: That's right, Mark. Our guest today is Laura Thompson, the founder of "Plastic-Free Living," a blog dedicated to sharing tips and resources for reducing plastic use. Welcome to the show, Laura!
-
-Guest (Laura): Thanks, Anna and Mark. It's great to be here.
-
-Mark: Laura, let's start by talking about your journey. What inspired you to start living a plastic-free lifestyle?
-
-# Importance Criteria
-
-A float score between 0-10 that represents the relevance of the text to sustainability, plastic waste reduction, and environmental policies, with 1 being trivial or irrelevant and 10 being highly significant, impactful, and actionable in promoting environmental awareness.
+# 重要性标准
+根据文本在可持续发展、塑料废弃物减少和环境政策中的相关性，分配一个介于0到10之间的浮动评分，其中1代表琐碎或无关，10代表高度重要、具有影响力并可促进环境意识的提升。
 #############################
 
 
 #############################
--Real Data-
+-真实数据-
 #############################
 
-# Domain
+# 领域
 
 {domain}
 
-# Persona
+# 角色
 
 {persona}
 
-# Data
+# 数据
 
 {input_text}
 
-# Importance Criteria
+# 重要性标准
 
 
 """
